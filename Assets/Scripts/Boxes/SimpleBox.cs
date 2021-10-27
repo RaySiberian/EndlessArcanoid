@@ -2,14 +2,19 @@ using UnityEngine;
 
 public class SimpleBox : CoreBox
 {
-    [SerializeField] private int SetHeath;
+    public int SetHealth;
     public Color[] Colors;
     private SpriteRenderer spriteRenderer;
-    
-    void Start()
+
+    private void OnEnable()
+    {
+        ChangeTexture(Health);
+    }
+
+    private void Start()
     {
         ScoreForDestroy = 1;
-        Health = SetHeath;
+        Health = SetHealth;
         Durability = 1;
         IsUnbreakable = false;
         spriteRenderer = GetComponent<SpriteRenderer>();

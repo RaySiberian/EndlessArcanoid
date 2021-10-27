@@ -19,6 +19,7 @@ public class PadController : MonoBehaviour
         if (Input.touchCount > 0)
         {
             Touch touch = Input.GetTouch(0);
+            
             Vector3 touchPosition = mainCamera.ScreenToWorldPoint(touch.position);
             touchPosition.z = 0f;
             touchPosition.y = yPos;
