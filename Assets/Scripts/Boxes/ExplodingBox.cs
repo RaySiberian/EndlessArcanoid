@@ -28,7 +28,7 @@ public class ExplodingBox : CoreBox
                 {
                     if (hits[j].collider.gameObject.TryGetComponent(out ExplodingBox expBox))
                     {
-                        Destroy(gameObject);
+                        DestroyBox();
                         expBox.Explode();
                     }
                     else if (hits[j].collider.gameObject.TryGetComponent(out CoreBox box))
@@ -46,7 +46,7 @@ public class ExplodingBox : CoreBox
             {
                 if (colliders[i].gameObject.TryGetComponent(out ExplodingBox expBox))
                 {
-                    Destroy(gameObject);
+                    DestroyBox();
                     expBox.Explode();
                 }
                 else if (colliders[i].gameObject.TryGetComponent(out CoreBox box))

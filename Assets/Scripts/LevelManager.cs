@@ -1,9 +1,14 @@
+using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 public class LevelManager : MonoBehaviour
 {
+    public List<CoreBox> Boxes = new List<CoreBox>(); 
+    
+    public int RawCount;
+    public int RawSizeInBlocks;
     public bool Generate;
     public GameObject SimplePrefab;
     public GameObject ExplosionPrefab;
@@ -12,40 +17,68 @@ public class LevelManager : MonoBehaviour
     public GameObject SimpleBoxDamaged1;
     public GameObject SimpleBoxDamaged2;
     
-    private int size = 9;
-    private Vector2 startSpawnPosition = new Vector2(-2, 3.75f);
+   
     private readonly Vector2 rowOffset = new Vector2(0.5f, 0);
     private readonly Vector2 columnOffset = new Vector2(0, -0.5f);
+    private Vector2 spawnPosition = new Vector2(-2, 3.75f);
+    private Vector2 rawSpawnPosition = new Vector2(-2, 3.75f);
     private GameObject boxToSpawn;
     
+    private int generatedBoxesCount;
+
+    private void OnEnable()
+    {
+        CoreBox.OnBoxDestroy += OnOnBoxDestroy;
+    }
+
+    private void OnOnBoxDestroy(CoreBox obj)
+    {
+        Boxes.Remove(obj);
+
+        if (Boxes.Count <= generatedBoxesCount - RawSizeInBlocks)
+        {
+            foreach (var box in Boxes)
+            {
+                box.Move();
+            }
+
+            spawnPosition = rawSpawnPosition;
+            SpawnRaw(true);
+        }
+    }
+
     private void Start()
     {
         if (Generate)
         {
             OnStartSpawnObjects();
         }
+
+        generatedBoxesCount = Boxes.Count;
     }
 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.E))
         {
-            OnStartSpawnObjects();
+            foreach (var box in Boxes)
+            {
+                box.Move();
+            }
         }
     }
 
     private void OnStartSpawnObjects()
     {
-        startSpawnPosition = new Vector2(-2, 3.75f);
+        spawnPosition = new Vector2(-2, 3.75f);
         
-        for (int i = 0; i < size; i++)
+        for (int i = 0; i < RawCount; i++)
         {
-            SpawnRaw();
-            startSpawnPosition = new Vector2(-2, startSpawnPosition.y) + columnOffset;
+            SpawnRaw(true);
         }
     }
 
-    private void SpawnRaw()
+    private void SpawnRaw(bool isStart)
     {
         int patterIndex = Random.Range(0, 6);
         int randomBox = Random.Range(0, 10);
@@ -66,12 +99,11 @@ public class LevelManager : MonoBehaviour
         {
             boxToSpawn = UnbreakablePrefab;
         }
-        
 
         switch (patterIndex)
         {
             case 0:
-                for (int i = 0; i < size; i++)
+                for (int i = 0; i < RawSizeInBlocks; i++)
                 {
                     if (i % 2 == 0)
                     {
@@ -84,7 +116,7 @@ public class LevelManager : MonoBehaviour
 
                 break;
             case 1:
-                for (int i = 0; i < size; i++)
+                for (int i = 0; i < RawSizeInBlocks; i++)
                 {
                     if (i % 2 == 1)
                     {
@@ -97,7 +129,7 @@ public class LevelManager : MonoBehaviour
 
                 break;
             case 2:
-                for (int i = 0; i < size; i++)
+                for (int i = 0; i < RawSizeInBlocks; i++)
                 {
                     if (i == 2 || i == 4 || i == 6)
                     {
@@ -110,7 +142,7 @@ public class LevelManager : MonoBehaviour
 
                 break;
             case 3:
-                for (int i = 0; i < size; i++)
+                for (int i = 0; i < RawSizeInBlocks; i++)
                 {
                     if (i == 3 || i == 5)
                     {
@@ -123,7 +155,7 @@ public class LevelManager : MonoBehaviour
 
                 break;
             case 4:
-                for (int i = 0; i < size; i++)
+                for (int i = 0; i < RawSizeInBlocks; i++)
                 {
                     if (i == 1 || i == 4 || i == 7)
                     {
@@ -136,7 +168,7 @@ public class LevelManager : MonoBehaviour
 
                 break;
             case 5:
-                for (int i = 0; i < size; i++)
+                for (int i = 0; i < RawSizeInBlocks; i++)
                 {
                     if (i == 2 || i == 6)
                     {
@@ -149,12 +181,17 @@ public class LevelManager : MonoBehaviour
 
                 break;
         }
+        
+        spawnPosition = new Vector2(-2, spawnPosition.y) + columnOffset;
+        generatedBoxesCount = Boxes.Count;
     }
 
     private void SpawnPatternObject(GameObject prefab)
     {
-        Instantiate(prefab, startSpawnPosition, quaternion.identity);
-        startSpawnPosition += rowOffset;
+        GameObject box = Instantiate(prefab, spawnPosition, quaternion.identity);
+        spawnPosition += rowOffset;
+            
+        Boxes.Add(box.GetComponent<CoreBox>());
     }
 
     private void SimpleBoxRandom()

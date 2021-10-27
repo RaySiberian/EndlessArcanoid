@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public abstract class CoreBox : MonoBehaviour
@@ -7,7 +8,8 @@ public abstract class CoreBox : MonoBehaviour
     public int ScoreForDestroy { get; set; }
     public bool IsUnbreakable;
     public bool IsExploding;
-    
+    public static event Action<CoreBox> OnBoxDestroy;
+
     public virtual void DestroyBox()
     {
         if (IsUnbreakable)
@@ -16,6 +18,7 @@ public abstract class CoreBox : MonoBehaviour
         }
         
         Data.Score += ScoreForDestroy;
+        OnBoxDestroy?.Invoke(this);
         Destroy(gameObject);
     }
 
@@ -44,7 +47,10 @@ public abstract class CoreBox : MonoBehaviour
 
     public virtual void Move()
     {
-        
+        var boxTransform = transform;
+        var position = boxTransform.position;
+        position = new Vector3(position.x, position.y - 0.5f);
+        boxTransform.position = position;
     }
     
     public virtual void Explode(){}
