@@ -9,7 +9,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2159749155185048265, guid: c41170226df754f46a8b4087798ed454, type: 3}
       propertyPath: m_Name
-      value: SimpleBoxDammaged3
+      value: SimpleBoxDammaged3 Variant
       objectReference: {fileID: 0}
     - target: {fileID: 2159749155185048268, guid: c41170226df754f46a8b4087798ed454, type: 3}
       propertyPath: m_RootOrder
